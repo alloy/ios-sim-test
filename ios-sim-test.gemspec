@@ -4,7 +4,7 @@ require "ios-sim-test/version"
 
 Gem::Specification.new do |s|
   s.name        = "ios-sim-test"
-  s.version     = Ios::Sim::Test::VERSION
+  s.version     = IOSSimTest::VERSION
   s.authors     = ["Eloy Durán"]
   s.email       = ["eloy.de.enige@gmail.com"]
   s.homepage    = ""
@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  # specify any dependencies here; for example:
-  # s.add_development_dependency "rspec"
-  # s.add_runtime_dependency "rest-client"
+  s.add_development_dependency "bacon"
+  s.add_development_dependency "mocha"
+  #s.add_development_dependency "mocha-on-bacon"
 end

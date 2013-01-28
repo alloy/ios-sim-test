@@ -1,4 +1,5 @@
 source "http://rubygems.org"
 
-# Specify your gem's dependencies in ios-sim-test.gemspec
 gemspec
+
+gem "mocha-on-bacon", :git => "git@github.com:alloy/mocha-on-bacon.git"
