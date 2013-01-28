@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+
+if $0 == __FILE__
+  $:.unshift File.expand_path('../../lib', __FILE__)
+end
+require 'ios-sim-test'
+
+# TODO parse path to workspace/project, target/scheme, etc.
+tests = ARGV
+
+IOSSimTest.new({}).run(tests)

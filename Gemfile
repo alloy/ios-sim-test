@@ -1,5 +1,2 @@
-source "http://rubygems.org"
-
+source :rubygems
 gemspec
-
-gem "mocha-on-bacon", :git => "git@github.com:alloy/mocha-on-bacon.git"

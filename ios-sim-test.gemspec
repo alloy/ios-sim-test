@@ -20,5 +20,5 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency "bacon"
   s.add_development_dependency "mocha"
-  #s.add_development_dependency "mocha-on-bacon"
+  s.add_development_dependency "mocha-on-bacon"
 end

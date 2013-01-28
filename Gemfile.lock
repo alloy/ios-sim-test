@@ -1,10 +1,3 @@
-GIT
-  remote: git@github.com:alloy/mocha-on-bacon.git
-  revision: 2404c3a2022c40b1a5a1d66cb1667c51ea297499
-  specs:
-    mocha-on-bacon (0.2.2)
-      mocha (>= 0.13.0)
-
 PATH
   remote: .
   specs:
@@ -17,6 +10,8 @@ GEM
     metaclass (0.0.1)
     mocha (0.13.2)
       metaclass (~> 0.0.1)
+    mocha-on-bacon (0.2.2)
+      mocha (>= 0.13.0)
 
 PLATFORMS
   ruby
@@ -25,4 +20,4 @@ DEPENDENCIES
   bacon
   ios-sim-test!
   mocha
-  mocha-on-bacon!
+  mocha-on-bacon
