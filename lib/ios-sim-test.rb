@@ -2,8 +2,10 @@ require 'ios-sim-test/version'
 require 'fileutils'
 
 class IOSSimTest
+  attr_reader :xcodebuild_params
+
   def initialize(xcodebuild_params)
-    @xcodebuild_params = xcodebuild_params
+    @xcodebuild_params = { :sdk => 'iphonesimulator' }.merge(xcodebuild_params)
   end
 
   def simulator_home_dir
@@ -77,5 +79,6 @@ class IOSSimTest
 
   def load_build_settings
     # TODO call: xcodebuild -sdk iphonesimulator -showBuildSettings
+    `xcodebuild #{xcodebuild_params.map { |k,v| "-#{k} '#{v}'" }.join(' ')} -showBuildSettings`
   end
 end

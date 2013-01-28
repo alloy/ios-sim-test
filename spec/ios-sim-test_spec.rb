@@ -10,31 +10,42 @@ end
 
 describe "IOSSimTest" do
   before do
-    @runner = IOSSimTest.new(:workspace => '/path/to/workspace', :scheme => 'UnitTests')
+    @runner = IOSSimTest.new(:workspace => '/path/to/Project.xcworkspace', :scheme => 'UnitTests')
+  end
+
+  it "uses xcodebuild to get an overview of the build settings for the specified workspace & scheme" do
+    # Ensure order in the hash by converting to an ordered hash.
+    ordered_params = @runner.xcodebuild_params.sort_by { |k,_| k }
+    @runner.stubs(:xcodebuild_params).returns(ordered_params)
+
+    @runner.expects(:`).with("xcodebuild -scheme 'UnitTests' -sdk 'iphonesimulator' " \
+                              "-workspace '/path/to/Project.xcworkspace' -showBuildSettings").returns('OUTPUT')
+    @runner.send(:load_build_settings).should == 'OUTPUT'
+  end
+
+  before do
     @runner.stubs(:load_build_settings).returns(File.read(fixture('build-settings.txt')))
     @runner.stubs(:raise)
   end
 
-  describe "concerning build settings" do
-    it "returns the SDK root" do
-      @runner.sdk_dir.should == '/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator6.0.sdk'
-    end
+  it "returns the SDK root" do
+    @runner.sdk_dir.should == '/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator6.0.sdk'
+  end
 
-    it "returns the developer frameworks dir" do
-      @runner.developer_frameworks_dir.should == File.join(@runner.sdk_dir, 'Applications/Xcode.app/Contents/Developer/Library/Frameworks')
-    end
+  it "returns the developer frameworks dir" do
+    @runner.developer_frameworks_dir.should == File.join(@runner.sdk_dir, 'Applications/Xcode.app/Contents/Developer/Library/Frameworks')
+  end
 
-    it "returns the path to the otest binary" do
-      @runner.otest_bin_path.should == File.join(@runner.sdk_dir, 'Developer/usr/bin/otest')
-    end
+  it "returns the path to the otest binary" do
+    @runner.otest_bin_path.should == File.join(@runner.sdk_dir, 'Developer/usr/bin/otest')
+  end
 
-    it "returns the build directory of a project" do
-      @runner.built_products_dir.should == '/Users/eloy/tmp/libPusher/DerivedData/libPusher/Build/Products/Debug-iphonesimulator'
-    end
+  it "returns the build directory of a project" do
+    @runner.built_products_dir.should == '/Users/eloy/tmp/libPusher/DerivedData/libPusher/Build/Products/Debug-iphonesimulator'
+  end
 
-    it "returns the built product path" do
-      @runner.built_product_path.should == File.join(@runner.built_products_dir, 'UnitTests.octest')
-    end
+  it "returns the built product path" do
+    @runner.built_product_path.should == File.join(@runner.built_products_dir, 'UnitTests.octest')
   end
 
   it "returns the iOS simulator home directory path" do
