@@ -64,10 +64,17 @@ describe "IOSSimTest" do
   describe "when running" do
     before do
       FileUtils.stubs(:mkdir_p)
+      @runner.stubs(:exec)
     end
 
     it "ensures the iOS simulator home directory exists" do
       FileUtils.expects(:mkdir_p).with(@runner.simulator_home_dir)
+      @runner.run([])
+    end
+
+    it "performs the command" do
+      # TODO this will change to not use exec!
+      @runner.expects(:exec).with(@runner.run_command([]))
       @runner.run([])
     end
   end

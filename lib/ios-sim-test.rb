@@ -49,6 +49,7 @@ class IOSSimTest
 
   def run(tests)
     FileUtils.mkdir_p(simulator_home_dir)
+    exec(run_command(tests))
   end
 
   private
