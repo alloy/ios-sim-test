@@ -9,8 +9,9 @@ class IOSSimTest
 
   attr_reader :xcodebuild_params
 
-  def initialize(xcodebuild_params, verbose = false)
+  def initialize(xcodebuild_params, verbose = false, colorize = true)
     @verbose = verbose
+    @colorize = colorize
     @xcodebuild_params = { :sdk => 'iphonesimulator' }.merge(xcodebuild_params)
   end
 
@@ -66,7 +67,7 @@ class IOSSimTest
     IO.popen(run_command(tests)) do |io|
       begin
         while line = io.readline
-          if output = format_output(line)
+          if output = format_output(line.strip)
             puts output
           end
         end
@@ -117,19 +118,24 @@ class IOSSimTest
     return if !@verbose && line =~ /^Test (Case|Suite)/
     case line
     when /\[PASSED\]/
-      line.green
+      colorize(:green, line)
     when /\[PENDING\]/
-      line.yellow
+      colorize(:yellow, line)
     when /^(.+?\.m)(:\d+:\s.+?\[FAILED\].+)/m
       # shorten the path to the test file to be relative to the source root
       if $1 == 'Unknown.m'
-        line.red
+        colorize(:red, line)
       else
         source_root = Pathname.new(source_root_dir)
-        (Pathname.new($1).relative_path_from(source_root).to_s + $2).red
+        relative_path = Pathname.new($1).relative_path_from(source_root).to_s + $2
+        colorize(:red, relative_path)
       end
     else
       line
     end
+  end
+
+  def colorize(color, str)
+    @colorize ? str.send(color) : str
   end
 end

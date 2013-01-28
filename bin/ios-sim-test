@@ -50,7 +50,7 @@ class IOSSimTest
       self.summary = "Run ‘logic’ tests."
 
       def run
-        IOSSimTest.new(@xcodebuild_params, @verbose).run([])
+        IOSSimTest.new(@xcodebuild_params, verbose?, colorize_output?).run([])
       end
     end
 
