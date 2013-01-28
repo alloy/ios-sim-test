@@ -75,6 +75,7 @@ class IOSSimTest
       end
     end
 
+    # TODO exit with number of failures
     exit $?.exitstatus
   end
 
