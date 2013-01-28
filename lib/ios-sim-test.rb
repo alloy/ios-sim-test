@@ -41,6 +41,11 @@ class IOSSimTest
     }
   end
 
+  def run_command(tests)
+    tests = tests.empty? ? 'All' : tests.uniq.join(',')
+    "#{otest_bin_path} -SenTest #{tests} #{built_product_path} 2>&1"
+  end
+
   private
 
   def build_settings

@@ -56,4 +56,12 @@ describe "IOSSimTest" do
       'DYLD_FRAMEWORK_PATH'           => "#{@runner.built_products_dir}:#{@runner.developer_frameworks_dir}",
     }
   end
+
+  it "returns the command that will run all the tests" do
+    @runner.run_command([]).should == "#{@runner.otest_bin_path} -SenTest All #{@runner.built_product_path} 2>&1"
+  end
+
+  it "returns the command that will run a subset of tests" do
+    @runner.run_command(%w{ Foo Bar Foo }).should == "#{@runner.otest_bin_path} -SenTest Foo,Bar #{@runner.built_product_path} 2>&1"
+  end
 end
