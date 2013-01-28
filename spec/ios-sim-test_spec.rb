@@ -28,6 +28,10 @@ describe "IOSSimTest" do
     @runner.stubs(:raise)
   end
 
+  it "returns the source root" do
+    @runner.source_root_dir.should == '/Users/eloy/tmp/libPusher'
+  end
+
   it "returns the SDK root" do
     @runner.sdk_dir.should == '/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator6.0.sdk'
   end
@@ -75,7 +79,8 @@ describe "IOSSimTest" do
   describe "when running" do
     before do
       FileUtils.stubs(:mkdir_p)
-      @runner.stubs(:exec)
+      IO.stubs(:popen)
+      @runner.stubs(:exit)
     end
 
     it "configures the environment" do
@@ -91,8 +96,7 @@ describe "IOSSimTest" do
     end
 
     it "performs the command" do
-      # TODO this will change to not use exec!
-      @runner.expects(:exec).with(@runner.run_command([]))
+      IO.expects(:popen).with(@runner.run_command([]))
       @runner.run([])
     end
   end

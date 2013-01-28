@@ -1,5 +1,7 @@
 require 'ios-sim-test/version'
+require 'colored'
 require 'fileutils'
+require 'pathname'
 
 class IOSSimTest
   class StandardError < ::StandardError
@@ -7,8 +9,13 @@ class IOSSimTest
 
   attr_reader :xcodebuild_params
 
-  def initialize(xcodebuild_params)
+  def initialize(xcodebuild_params, verbose = false)
+    @verbose = verbose
     @xcodebuild_params = { :sdk => 'iphonesimulator' }.merge(xcodebuild_params)
+  end
+
+  def source_root_dir
+    validate_path('source root', build_settings['SRCROOT'])
   end
 
   def simulator_home_dir
@@ -55,7 +62,19 @@ class IOSSimTest
   def run(tests)
     FileUtils.mkdir_p(simulator_home_dir)
     environment.each { |key, value| ENV[key] = value }
-    exec(run_command(tests))
+
+    IO.popen(run_command(tests)) do |io|
+      begin
+        while line = io.readline
+          if output = format_output(line)
+            puts output
+          end
+        end
+      rescue EOFError
+      end
+    end
+
+    exit $?.exitstatus
   end
 
   private
@@ -91,6 +110,26 @@ class IOSSimTest
         output = "Error: #{error[1]}"
       end
       raise(StandardError, output)
+    end
+  end
+
+  def format_output(line)
+    return if !@verbose && line =~ /^Test (Case|Suite)/
+    case line
+    when /\[PASSED\]/
+      line.green
+    when /\[PENDING\]/
+      line.yellow
+    when /^(.+?\.m)(:\d+:\s.+?\[FAILED\].+)/m
+      # shorten the path to the test file to be relative to the source root
+      if $1 == 'Unknown.m'
+        line.red
+      else
+        source_root = Pathname.new(source_root_dir)
+        (Pathname.new($1).relative_path_from(source_root).to_s + $2).red
+      end
+    else
+      line
     end
   end
 end
