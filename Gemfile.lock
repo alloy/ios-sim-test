@@ -2,11 +2,15 @@ PATH
   remote: .
   specs:
     ios-sim-test (0.0.1)
+      claide (>= 0.2)
+      colored
 
 GEM
   remote: http://rubygems.org/
   specs:
     bacon (1.2.0)
+    claide (0.2.0)
+    colored (1.2)
     metaclass (0.0.1)
     mocha (0.13.2)
       metaclass (~> 0.0.1)

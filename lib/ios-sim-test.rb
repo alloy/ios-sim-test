@@ -2,6 +2,9 @@ require 'ios-sim-test/version'
 require 'fileutils'
 
 class IOSSimTest
+  class StandardError < ::StandardError
+  end
+
   attr_reader :xcodebuild_params
 
   def initialize(xcodebuild_params)
@@ -17,7 +20,7 @@ class IOSSimTest
   end
 
   def developer_frameworks_dir
-    validate_path('developer frameworks', File.join(sdk_dir, build_settings['DEVELOPER_FRAMEWORKS_DIR']))
+    validate_path('developer frameworks', File.join(sdk_dir, 'Developer/Library/Frameworks'))
   end
 
   def built_products_dir
@@ -51,6 +54,7 @@ class IOSSimTest
 
   def run(tests)
     FileUtils.mkdir_p(simulator_home_dir)
+    environment.each { |key, value| ENV[key] = value }
     exec(run_command(tests))
   end
 
@@ -79,6 +83,14 @@ class IOSSimTest
 
   def load_build_settings
     # TODO call: xcodebuild -sdk iphonesimulator -showBuildSettings
-    `xcodebuild #{xcodebuild_params.map { |k,v| "-#{k} '#{v}'" }.join(' ')} -showBuildSettings`
+    output = `xcodebuild #{xcodebuild_params.map { |k,v| "-#{k} '#{v}'" }.join(' ')} -showBuildSettings 2>&1`
+    if $?.success?
+      output
+    else
+      if error = output.match(/^xcodebuild: error: (.+)/)
+        output = "Error: #{error[1]}"
+      end
+      raise(StandardError, output)
+    end
   end
 end

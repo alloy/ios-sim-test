@@ -1,11 +1,67 @@
 #!/usr/bin/env ruby
+# encoding: utf-8
 
 if $0 == __FILE__
   $:.unshift File.expand_path('../../lib', __FILE__)
 end
+
 require 'ios-sim-test'
+require 'claide'
+require 'colored'
+
+class IOSSimTest
+  class StandardError
+    include CLAide::InformativeError
+  end
+
+  class Bin < CLAide::Command
+    self.abstract_command = true
+
+    self.description = 'Run iOS unit tests from the command-line.'
+
+    self.command = File.basename($0)
+
+    def self.options
+      [
+        ['--workspace=[PATH]', 'The Xcode Workspace document'],
+        ['--scheme=[NAME]',    'The test scheme to be used'],
+        ['--sdk=[NAME]',       'The SDK to run the tests against (defaults to "iphonesimulator")']
+      ].concat(super)
+    end
+
+    def initialize(argv)
+      workspace = argv.option('workspace')
+      scheme = argv.option('scheme')
+      @xcodebuild_params = { :sdk => argv.option('sdk', 'iphonesimulator') }
+      @xcodebuild_params[:workspace] = File.expand_path(workspace) if workspace
+      @xcodebuild_params[:scheme] = scheme if scheme
+      super
+    end
+
+    def validate!
+      super
+      # TODO support project/configuration/target
+      unless @xcodebuild_params.has_key?(:workspace) && @xcodebuild_params.has_key?(:scheme)
+        help! "You need to specify both a workspace and a scheme."
+      end
+    end
+
+    class Logic < Bin
+      self.summary = "Run ‘logic’ tests."
+
+      def run
+        IOSSimTest.new(@xcodebuild_params).run([])
+      end
+    end
+
+    class Application < Bin
+      self.summary = "Run ‘application’ tests. (TODO)"
+    end
+  end
+end
+
+IOSSimTest::Bin.run(ARGV)
 
 # TODO parse path to workspace/project, target/scheme, etc.
-tests = ARGV
-
-IOSSimTest.new({}).run(tests)
+#tests = ARGV
+#IOSSimTest.new({}).run(tests)

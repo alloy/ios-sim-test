@@ -19,7 +19,7 @@ describe "IOSSimTest" do
     @runner.stubs(:xcodebuild_params).returns(ordered_params)
 
     @runner.expects(:`).with("xcodebuild -scheme 'UnitTests' -sdk 'iphonesimulator' " \
-                              "-workspace '/path/to/Project.xcworkspace' -showBuildSettings").returns('OUTPUT')
+                              "-workspace '/path/to/Project.xcworkspace' -showBuildSettings 2>&1").returns('OUTPUT')
     @runner.send(:load_build_settings).should == 'OUTPUT'
   end
 
@@ -33,7 +33,7 @@ describe "IOSSimTest" do
   end
 
   it "returns the developer frameworks dir" do
-    @runner.developer_frameworks_dir.should == File.join(@runner.sdk_dir, 'Applications/Xcode.app/Contents/Developer/Library/Frameworks')
+    @runner.developer_frameworks_dir.should == File.join(@runner.sdk_dir, 'Developer/Library/Frameworks')
   end
 
   it "returns the path to the otest binary" do
@@ -76,6 +76,13 @@ describe "IOSSimTest" do
     before do
       FileUtils.stubs(:mkdir_p)
       @runner.stubs(:exec)
+    end
+
+    it "configures the environment" do
+      @runner.run([])
+      @runner.environment.each do |key, value|
+        ENV[key].should == value
+      end
     end
 
     it "ensures the iOS simulator home directory exists" do
