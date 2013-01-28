@@ -29,6 +29,18 @@ class IOSSimTest
     File.join(sdk_dir, 'Developer/usr/bin/otest')
   end
 
+  def environment
+    {
+      'DYLD_NEW_LOCAL_SHARED_REGIONS' => 'YES',
+      'DYLD_NO_FIX_PREBINDING'        => 'YES',
+      'CFFIXED_USER_HOME'             => simulator_home_dir,
+      'IPHONE_SIMULATOR_ROOT'         => sdk_dir,
+      'DYLD_ROOT_PATH'                => sdk_dir,
+      'DYLD_LIBRARY_PATH'             => built_products_dir,
+      'DYLD_FRAMEWORK_PATH'           => "#{built_products_dir}:#{developer_frameworks_dir}",
+    }
+  end
+
   private
 
   def build_settings

@@ -44,4 +44,16 @@ describe "IOSSimTest" do
       @runner.built_product_path.should == File.join(@runner.built_products_dir, 'UnitTests.octest')
     end
   end
+
+  it "returns the env variables that should be set to be able to run" do
+    @runner.environment.should == {
+      'DYLD_NEW_LOCAL_SHARED_REGIONS' => 'YES',
+      'DYLD_NO_FIX_PREBINDING'        => 'YES',
+      'CFFIXED_USER_HOME'             => @runner.simulator_home_dir,
+      'IPHONE_SIMULATOR_ROOT'         => @runner.sdk_dir,
+      'DYLD_ROOT_PATH'                => @runner.sdk_dir,
+      'DYLD_LIBRARY_PATH'             => @runner.built_products_dir,
+      'DYLD_FRAMEWORK_PATH'           => "#{@runner.built_products_dir}:#{@runner.developer_frameworks_dir}",
+    }
+  end
 end
