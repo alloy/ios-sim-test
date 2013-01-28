@@ -1,4 +1,5 @@
-require "ios-sim-test/version"
+require 'ios-sim-test/version'
+require 'fileutils'
 
 class IOSSimTest
   def initialize(xcodebuild_params)
@@ -10,23 +11,23 @@ class IOSSimTest
   end
 
   def sdk_dir
-    build_settings['SDK_DIR']
+    validate_path('SDK', build_settings['SDK_DIR'])
   end
 
   def developer_frameworks_dir
-    File.join(sdk_dir, build_settings['DEVELOPER_FRAMEWORKS_DIR'])
+    validate_path('developer frameworks', File.join(sdk_dir, build_settings['DEVELOPER_FRAMEWORKS_DIR']))
   end
 
   def built_products_dir
-    build_settings['BUILT_PRODUCTS_DIR']
+    validate_path('build directory', build_settings['BUILT_PRODUCTS_DIR'])
   end
 
   def built_product_path
-    File.join(built_products_dir, build_settings['FULL_PRODUCT_NAME'])
+    validate_path('test bundle', File.join(built_products_dir, build_settings['FULL_PRODUCT_NAME']))
   end
 
   def otest_bin_path
-    File.join(sdk_dir, 'Developer/usr/bin/otest')
+    validate_path('otest binary', File.join(sdk_dir, 'Developer/usr/bin/otest'))
   end
 
   def environment
@@ -46,7 +47,16 @@ class IOSSimTest
     "#{otest_bin_path} -SenTest #{tests} #{built_product_path} 2>&1"
   end
 
+  def run(tests)
+    FileUtils.mkdir_p(simulator_home_dir)
+  end
+
   private
+
+  def validate_path(desc, path)
+    raise "The #{desc} path does not exist at: #{path}" unless File.exist?(path)
+    path
+  end
 
   def build_settings
     unless @build_settings
