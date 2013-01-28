@@ -3,7 +3,7 @@ PATH
   specs:
     ios-sim-test (0.0.1)
       claide (>= 0.2)
-      colored
+      colored (~> 1.2)
 
 GEM
   remote: http://rubygems.org/
