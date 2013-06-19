@@ -8,7 +8,9 @@ For now this will have to be installed directly from the repo or by using Bundle
 
 ### Usage
 
-With a workspace:
+Be sure to create a scheme specifically for your unit test bundle target, so
+that you can easily build the binary with `xcodebuild`, but also so that we can
+easily get build settings just for that target.
 
 ```
 $ ios-sim-test logic --workspace=/path/to/Project.xcworkspace --scheme=UnitTests
