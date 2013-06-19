@@ -63,7 +63,7 @@ class IOSSimTest
       'DYLD_FRAMEWORK_PATH'           => "#{built_products_dir}:#{developer_frameworks_dir}",
     }
     if @verbose
-      env['DYLD_PRINT_APIS']      = 'YES'
+      #env['DYLD_PRINT_APIS']      = 'YES'
       env['DYLD_PRINT_LIBRARIES'] = 'YES'
     end
     if sdk_name.include?('iphone')
