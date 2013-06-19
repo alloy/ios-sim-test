@@ -12,7 +12,11 @@ class IOSSimTest
   def initialize(xcodebuild_params, verbose = false, colorize = true)
     @verbose = verbose
     @colorize = colorize
-    @xcodebuild_params = { :sdk => 'iphonesimulator' }.merge(xcodebuild_params)
+    @xcodebuild_params = xcodebuild_params
+  end
+
+  def sdk_name
+    @xcodebuild_params[:sdk] ||= build_settings['SDK_NAME']
   end
 
   def source_root_dir
@@ -28,7 +32,12 @@ class IOSSimTest
   end
 
   def developer_frameworks_dir
-    validate_path('developer frameworks', File.join(sdk_dir, 'Developer/Library/Frameworks'))
+    path = File.join(sdk_dir, 'Developer/Library/Frameworks')
+    if File.exist?(path)
+      path
+    else
+      validate_path('developer frameworks', build_settings['DEVELOPER_FRAMEWORKS_DIR'])
+    end
   end
 
   def built_products_dir
@@ -40,19 +49,27 @@ class IOSSimTest
   end
 
   def otest_bin_path
-    validate_path('otest binary', File.join(sdk_dir, 'Developer/usr/bin/otest'))
+    `xcrun --sdk #{sdk_name} --find otest`.strip
   end
 
   def environment
-    {
+    env = {
+      'OBJC_DISABLE_GC'               => 'YES', # The GC is deprecated, no option needed atm.
       'DYLD_NEW_LOCAL_SHARED_REGIONS' => 'YES',
       'DYLD_NO_FIX_PREBINDING'        => 'YES',
-      'CFFIXED_USER_HOME'             => simulator_home_dir,
-      'IPHONE_SIMULATOR_ROOT'         => sdk_dir,
       'DYLD_ROOT_PATH'                => sdk_dir,
       'DYLD_LIBRARY_PATH'             => built_products_dir,
       'DYLD_FRAMEWORK_PATH'           => "#{built_products_dir}:#{developer_frameworks_dir}",
     }
+    if @verbose
+      env['DYLD_PRINT_APIS']      = 'YES'
+      env['DYLD_PRINT_LIBRARIES'] = 'YES'
+    end
+    if sdk_name.include?('iphone')
+      env['CFFIXED_USER_HOME']     = simulator_home_dir
+      env['IPHONE_SIMULATOR_ROOT'] = sdk_dir
+    end
+    env
   end
 
   def run_command(tests)
@@ -140,3 +157,4 @@ class IOSSimTest
     @colorize ? str.send(color) : str
   end
 end
+

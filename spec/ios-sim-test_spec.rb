@@ -17,9 +17,7 @@ describe "IOSSimTest" do
     # Ensure order in the hash by converting to an ordered hash.
     ordered_params = @runner.xcodebuild_params.sort_by { |k,_| k }
     @runner.stubs(:xcodebuild_params).returns(ordered_params)
-
-    @runner.expects(:`).with("xcodebuild -scheme 'UnitTests' -sdk 'iphonesimulator' " \
-                              "-workspace '/path/to/Project.xcworkspace' -showBuildSettings 2>&1").returns('OUTPUT')
+    @runner.expects(:`).with("xcodebuild -scheme 'UnitTests' -workspace '/path/to/Project.xcworkspace' -showBuildSettings 2>&1").returns('OUTPUT')
     @runner.send(:load_build_settings).should == 'OUTPUT'
   end
 
@@ -37,11 +35,12 @@ describe "IOSSimTest" do
   end
 
   it "returns the developer frameworks dir" do
-    @runner.developer_frameworks_dir.should == File.join(@runner.sdk_dir, 'Developer/Library/Frameworks')
+    #@runner.developer_frameworks_dir.should == File.join(@runner.sdk_dir, 'Developer/Library/Frameworks')
+    @runner.developer_frameworks_dir.should == '/Applications/Xcode.app/Contents/Developer/Library/Frameworks'
   end
 
   it "returns the path to the otest binary" do
-    @runner.otest_bin_path.should == File.join(@runner.sdk_dir, 'Developer/usr/bin/otest')
+    @runner.otest_bin_path.should == '/Applications/Xcode.app/Contents/Developer/Tools/otest'
   end
 
   it "returns the build directory of a project" do
@@ -58,6 +57,7 @@ describe "IOSSimTest" do
 
   it "returns the env variables that should be set to be able to run" do
     @runner.environment.should == {
+      'OBJC_DISABLE_GC'               => 'YES',
       'DYLD_NEW_LOCAL_SHARED_REGIONS' => 'YES',
       'DYLD_NO_FIX_PREBINDING'        => 'YES',
       'CFFIXED_USER_HOME'             => @runner.simulator_home_dir,

@@ -227,7 +227,7 @@ Build settings for action build and target UnitTests:
     SCRIPTS_FOLDER_PATH = UnitTests.octest/Scripts
     SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator6.0.sdk
     SDK_DIR = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator6.0.sdk
-    SDK_NAME = iphonesimulator6.0
+    SDK_NAME = iphonesimulator
     SDK_PRODUCT_BUILD_VERSION = 10A403
     SED = /usr/bin/sed
     SEPARATE_STRIP = NO
