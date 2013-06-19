@@ -49,7 +49,8 @@ class IOSSimTest
   end
 
   def otest_bin_path
-    `xcrun --sdk #{sdk_name} --find otest`.strip
+    output = `xcrun --sdk #{sdk_name} --find otest  2>&1`.strip
+    output.include?('unable to find') ? '/Applications/Xcode.app/Contents/Developer/Tools/otest' : output
   end
 
   def environment
